@@ -25,6 +25,14 @@ class GetCartViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  double get totalPrice => _cartItems.fold(
-      0.0, (sum, item) => sum + (item.price * item.quantity));
+  double get totalPrice =>
+      _cartItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+
+  void deleteCartItem(String userId, String plantId) {
+    // TODO: Call the real API here
+    print("Delete called for userId: $userId and plantId: $plantId");
+  }
+
+
+
 }

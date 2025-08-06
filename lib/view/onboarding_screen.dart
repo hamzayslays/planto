@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../view_model/onboarding_view_model.dart';
+import 'auth/sign_up.dart';
 import 'home_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -74,7 +75,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 right: 18.w,
                 child: InkWell(
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>  HomeScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>  SignupScreen()));
                   },
                   child: Text(
                     'Skip ',

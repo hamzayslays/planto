@@ -2,6 +2,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:another_flushbar/flushbar_route.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Utils {
   static double averageRatings(List<int> rating) {
@@ -30,17 +31,19 @@ class Utils {
   }
 
   static void flushBarErrorMessage(String message, BuildContext context) {
+    if (!context.mounted) return;
     showFlushbar(
       context: context,
       flushbar: Flushbar(
         forwardAnimationCurve: Curves.decelerate,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        padding: EdgeInsets.all(15),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.all(15),
         backgroundColor: Colors.red,
         reverseAnimationCurve: Curves.easeInOut,
+        duration: Duration(seconds: 3),
         borderRadius: BorderRadius.circular(12),
         positionOffset: 20,
-        icon: Icon(Icons.error),
+        icon: const Icon(Icons.error),
         flushbarPosition: FlushbarPosition.TOP,
         message: message,
       )..show(context),
@@ -48,17 +51,19 @@ class Utils {
   }
 
   static void flushBarSuccessMessage(String message, BuildContext context) {
+    if (!context.mounted) return;
     showFlushbar(
       context: context,
       flushbar: Flushbar(
         forwardAnimationCurve: Curves.decelerate,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        padding: EdgeInsets.all(15),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.all(15),
         backgroundColor: Colors.green,
         reverseAnimationCurve: Curves.easeInOut,
+        duration: Duration(seconds: 3),
         borderRadius: BorderRadius.circular(12),
         positionOffset: 20,
-        icon: Icon(Icons.error),
+        icon: const Icon(Icons.check_circle),
         flushbarPosition: FlushbarPosition.TOP,
         message: message,
       )..show(context),
@@ -66,8 +71,20 @@ class Utils {
   }
 
   static snackBar(String message, BuildContext context) {
+    if (!context.mounted) return;
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(backgroundColor: Colors.red, content: Text(message)),
     );
   }
+
+  static Future<void> saveUserIdToLocalStorage(String userId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
+  }
+
+  static Future<String> getUserIdFromLocalStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString("userId") ?? "";
+  }
+
 }

@@ -36,6 +36,8 @@ class AuthViewModel with ChangeNotifier {
     setLoading(true);
     try {
       final value = await _myRepo.loginApi(data);
+      final userId = value['users']['_id']; // <-- double check key path
+      await Utils.saveUserIdToLocalStorage(userId);
       setLoading(false);
 
       if (value['warning'] != null) {

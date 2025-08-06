@@ -1,38 +1,40 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CustomButton extends StatelessWidget {
-  final String text;
-  final Color color;
-  final VoidCallback? onPress;
-
-  const CustomButton({
-    super.key,
-    required this.text,
-    required this.color,
-    this.onPress,
-  });
+class CustomButtons extends StatelessWidget {
+  final name;
+  bool loading;
+  final onPressed;
+  CustomButtons({super.key, this.name, this.onPressed, this.loading = false});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onPress,
+      onTap: onPressed,
       child: Container(
-        height: 50.h,
-        width: 318.w,
         child: Center(
-          child: Text(
-            text,
+          child:
+          loading
+              ? CircularProgressIndicator(
+            strokeWidth: 3,
+            color: Colors.white,
+          )
+              : Text(
+            name,
+
             style: TextStyle(
+              fontSize: 18.sp,
               color: Colors.white,
-              fontSize: 16.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
+        height: 48.h,
+        width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.r),
-          color: color,
+          color:  Colors.green.shade500,
+          borderRadius: BorderRadius.circular(10.r),
         ),
       ),
     );
