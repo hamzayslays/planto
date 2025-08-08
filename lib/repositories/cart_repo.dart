@@ -3,6 +3,7 @@ import '../data/network/network_api_services.dart';
 import '../model/cart_item_model.dart';
 import '../resources/app_url.dart';
 
+
 class CartRepository {
   final BaseApiServices _apiServices = NetworkApiService();
 
@@ -46,6 +47,22 @@ class CartRepository {
     }
   }
 
+  Future<dynamic> updateCartQuantity(String userId, String plantId, dynamic data) async {
+    try {
+
+
+      final response = await _apiServices.getPutApiResponse(
+          AppUrl.updateCartEndPointUrl
+              .replaceAll('{userId}', userId)
+              .replaceAll('{plantId}', plantId),
+        data
+      );
+      return response;
+    } catch (e) {
+      print(" Error in updateCartQuantity: $e");
+      rethrow;
+    }
+  }
 
 
 }

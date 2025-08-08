@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:planto/utils/routes/routes.dart';
 import 'package:planto/utils/routes/routes_name.dart';
 import 'package:planto/view_model/cart_view_model.dart';
+import 'package:planto/view_model/check_out_view_model.dart';
 import 'package:planto/view_model/delete_cart_view_model.dart';
+import 'package:planto/view_model/fav_view_model.dart';
 import 'package:planto/view_model/get_cart_view_model.dart';
 import 'package:planto/view_model/home_screen_view_model.dart';
 import 'package:planto/view_model/onboarding_view_model.dart';
@@ -25,6 +27,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => CartViewModel()),
         ChangeNotifierProvider(create: (_) => GetCartViewModel()),
         ChangeNotifierProvider(create: (_) => DeleteCartViewModel()),
+        ChangeNotifierProvider(create: (_) => FavoriteViewModel()),
+        ChangeNotifierProvider(create: (_) =>  CheckOutViewModel([])),
       ],
       child: const MyApp(),
     ),

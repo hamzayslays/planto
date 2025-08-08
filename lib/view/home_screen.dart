@@ -4,11 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:planto/resources/app_colors.dart';
 import 'package:planto/utils/routes/routes_name.dart';
-import 'package:planto/view/categories_screen/outdoor_screen.dart';
 import 'package:planto/view_model/home_screen_view_model.dart';
 import 'package:provider/provider.dart';
 import '../data/reponse/status.dart';
-import 'categories_screen/indoor_screen.dart';
+import 'favourite_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +18,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HomeViewModel homeViewModel = HomeViewModel();
+
+  List<String> favoriteIds = [];
+
 
   @override
   void initState() {
@@ -381,7 +383,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                           Padding(
                                             padding: EdgeInsets.only(
-                                              right: 8.w,
                                               top: 10,
                                             ),
                                             child: Row(
@@ -399,12 +400,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ),
                                                   textAlign: TextAlign.left,
                                                 ),
-                                                Icon(
-                                                  Icons.shopping_bag_outlined,
-                                                  color: AppColors.buttonColor,
-                                                  size: 28.sp,
+                                                InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      if (favoriteIds.contains(plant.sId)) {
+                                                        favoriteIds.remove(plant.sId);
+                                                      } else {
+                                                        favoriteIds.add(plant.sId!);
+                                                      }
+                                                    });
+                                                  },
+                                                  child: Icon(
+                                                    favoriteIds.contains(plant.sId)
+                                                        ? Icons.favorite
+                                                        : Icons.favorite_border,
+                                                    color: favoriteIds.contains(plant.sId)
+                                                        ? Colors.green
+                                                        : AppColors.buttonColor,
+                                                    size: 28.sp,
+                                                  ),
                                                 ),
-                                              ],
+                                              ]
                                             ),
                                           ),
                                         ],

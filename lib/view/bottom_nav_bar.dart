@@ -18,7 +18,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   final List<Widget> _pages = [
     HomeScreen(),
-    FavouriteScreen(),
+    FavouriteScreen(favoriteIds: []),
     CartScreen(),
     ProfileScreen(),
   ];

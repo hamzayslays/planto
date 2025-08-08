@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../view_model/delete_cart_view_model.dart';
 import '../view_model/get_cart_view_model.dart';
 import '../widgets/cart_tile.dart';
+import 'check_out_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -17,22 +17,21 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   Set<String> selectedItems = {};
 
+  double _calculateSelectedTotal(GetCartViewModel provider) {
+    return provider.cartItems
+        .where((item) => selectedItems.contains(item.plantId))
+        .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+  }
+
   @override
   void initState() {
     super.initState();
-    _fetchCartData();
-  }
-
-  Future<void> _fetchCartData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
-
-    if (userId != null) {
-      Provider.of<GetCartViewModel>(context, listen: false)
-          .fetchCartItems(userId);
-    } else {
-      debugPrint("User ID not found");
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<GetCartViewModel>(
+        context,
+        listen: false,
+      ).fetchCartUsingPrefs();
+    });
   }
 
   @override
@@ -46,51 +45,41 @@ class _CartScreenState extends State<CartScreen> {
         centerTitle: true,
         title: Text(
           'Your Cart',
-          style: TextStyle(color: Colors.white, fontSize: 18.sp),
+          style: TextStyle(color: Colors.white, fontSize: 22.sp),
         ),
       ),
-      body: cartProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : cartProvider.cartItems.isEmpty
-          ? const Center(child: Text("No items in cart"))
-          : ListView.builder(
-        padding: EdgeInsets.symmetric(vertical: 10.h),
-        itemCount: cartProvider.cartItems.length,
-        itemBuilder: (context, index) {
-          final item = cartProvider.cartItems[index];
+      body:
+          cartProvider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : cartProvider.cartItems.isEmpty
+              ? const Center(child: Text("No items in cart"))
+              : ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                itemCount: cartProvider.cartItems.length,
+                itemBuilder: (context, index) {
+                  final item = cartProvider.cartItems[index];
 
-          return CartItemTileWidget(
-            item: item,
-            isSelected: selectedItems.contains(item.plantId),
-            onCheckboxChanged: (bool? value) {
-              setState(() {
-                if (value == true) {
-                  selectedItems.add(item.plantId);
-                } else {
-                  selectedItems.remove(item.plantId);
-                }
-              });
-            },
-            onDelete: (userId, plantId) async {
-              final deleteProvider = Provider.of<DeleteCartViewModel>(
-                context,
-                listen: false,
-              );
-
-              await deleteProvider.deleteCartItem(
-                userId,
-                plantId,
-                context,
-              );
-
-              Provider.of<GetCartViewModel>(
-                context,
-                listen: false,
-              ).fetchCartItems(userId);
-            },
-          );
-        },
-      ),
+                  return CartItemTileWidget(
+                    item: item,
+                    isSelected: selectedItems.contains(item.plantId),
+                    onCheckboxChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          selectedItems.add(item.plantId);
+                        } else {
+                          selectedItems.remove(item.plantId);
+                        }
+                      });
+                    },
+                    onDelete: (_, _) async {
+                      await cartProvider.deleteAndRefreshItem(
+                        item.plantId,
+                        context,
+                      );
+                    },
+                  );
+                },
+              ),
       bottomNavigationBar: _buildBottomBar(cartProvider),
     );
   }
@@ -99,7 +88,7 @@ class _CartScreenState extends State<CartScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.green.shade50,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -112,30 +101,49 @@ class _CartScreenState extends State<CartScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Total: Rs/= ${cartProvider.totalPrice.toStringAsFixed(2)}',
+            'Total: Rs/= ${_calculateSelectedTotal(cartProvider).toStringAsFixed(2)}',
             style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
           ),
-          ElevatedButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Checkout functionality coming soon!'),
-                ),
-              );
+
+          InkWell(
+            onTap: () async {
+
+              if (selectedItems.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Please select at least one item."),
+                  ),
+                );
+                return;
+              }
+
+              final selectedCartItems =
+                  cartProvider.cartItems
+                      .where((item) => selectedItems.contains(item.plantId))
+                      .toList();
+              for (var item in selectedCartItems) {
+                print("${item.name} x${item.quantity}");
+              }
+              setState(() => selectedItems.clear());
+
+              Navigator.push(context, MaterialPageRoute(builder: (_)=> CheckOutScreen(selectedItems: selectedCartItems)  ));
+
             },
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-              backgroundColor: Colors.green,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
+            child: Container(
+              height: 50,
+              width: 150,
+              decoration: BoxDecoration(color: Colors.green.shade500,
+              borderRadius: BorderRadius.circular(12.r)
               ),
-            ),
-            child: Text(
-              'Checkout',
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+              child: Center(
+                child: Text(
+                  'Checkout',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ),

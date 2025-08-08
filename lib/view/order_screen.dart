@@ -198,7 +198,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ],
                                   ),
                                   InkWell(
-                                    onTap: () async {
+                                    onTap:
+                                        () async {
                                       final cartViewModel = Provider.of<CartViewModel>(context, listen: false);
                                       final orderViewModel = Provider.of<OrderViewModel>(context, listen: false);
                                       final plant = value.getPlantById.data!.data!;

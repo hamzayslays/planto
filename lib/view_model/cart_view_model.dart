@@ -28,7 +28,7 @@ class CartViewModel extends ChangeNotifier {
     setLoading(true);
 
     final userId = await Utils.getUserIdFromLocalStorage();
-    print("🟢 Retrieved userId: $userId");
+    print("Retrieved userId: $userId");
 
     if (userId.isEmpty) {
       Utils.flushBarErrorMessage("User ID not found in local storage", context);

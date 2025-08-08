@@ -37,16 +37,18 @@ class CartItemTileWidget extends StatelessWidget {
           ],
         ),
         child: Card(
+          color: Colors.green.shade50,
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ListTile(
+
             leading: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
              Checkbox(value: isSelected, onChanged: onCheckboxChanged,visualDensity: VisualDensity.compact,activeColor: Colors.green,),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(item.imageUrl, width: 75.w, height: 75.h,fit: BoxFit.cover,),
+                  child: Image.network(item.imageUrl, width: 60.w, height: 60.h,fit: BoxFit.cover,),
                 ),
             ],),
             title: Column(
