@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../view_model/delete_cart_view_model.dart';
 import '../view_model/get_cart_view_model.dart';
 import '../widgets/cart_tile.dart';
 import 'check_out_screen.dart';
@@ -22,6 +20,7 @@ class _CartScreenState extends State<CartScreen> {
         .where((item) => selectedItems.contains(item.plantId))
         .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
   }
+
 
   @override
   void initState() {
@@ -101,7 +100,7 @@ class _CartScreenState extends State<CartScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Total: Rs/= ${_calculateSelectedTotal(cartProvider).toStringAsFixed(2)}',
+            'Total: Rs.${_calculateSelectedTotal(cartProvider).toStringAsFixed(2)}',
             style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
           ),
 

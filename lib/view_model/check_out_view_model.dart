@@ -10,8 +10,12 @@ class CheckOutViewModel extends ChangeNotifier {
   CheckOutViewModel(this.selectedItems);
 
   double get subTotal {
-    return selectedItems.fold(0, (sum, item) => sum + item.price * item.quantity);
+    return selectedItems.fold(
+      0,
+          (sum, item) => sum + (item.price * item.quantity),
+    );
   }
+
 
   double get total => subTotal + deliveryFee;
 

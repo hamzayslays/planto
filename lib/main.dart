@@ -10,6 +10,7 @@ import 'package:planto/view_model/get_cart_view_model.dart';
 import 'package:planto/view_model/home_screen_view_model.dart';
 import 'package:planto/view_model/onboarding_view_model.dart';
 import 'package:planto/view_model/order_view_model.dart';
+import 'package:planto/view_model/payment_methods/stripe_view_model.dart';
 import 'package:planto/view_model/signup_view_model.dart';
 import 'package:planto/view_model/user_view_model.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => GetCartViewModel()),
         ChangeNotifierProvider(create: (_) => DeleteCartViewModel()),
         ChangeNotifierProvider(create: (_) => FavoriteViewModel()),
+        ChangeNotifierProvider(create: (_) => StripePaymentViewModel()),
         ChangeNotifierProvider(create: (_) =>  CheckOutViewModel([])),
       ],
       child: const MyApp(),

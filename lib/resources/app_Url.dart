@@ -20,6 +20,6 @@ class AppUrl{
 
   static var  deleteCartEndPointUrl = baseUrl + '/api/v0/plants/removeFromCart/{userId}/{plantId}';
 
-  static var updateCartEndPointUrl = '$baseUrl/api/v0/plants/updateCart/{userId}/{plantId}';
+  static var createOrderEndPointUrl = '$baseUrl/api/v0/orders/createOrder ';
 
 }

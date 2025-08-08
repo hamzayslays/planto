@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:planto/utils/utils.dart';
+import 'package:planto/view/payment_methods/easy_paisa.dart';
+import 'package:planto/view/payment_methods/jazz_cash.dart';
+import 'package:planto/view/payment_methods/stripe_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../model/cart_item_model.dart';
 import '../view_model/check_out_view_model.dart';
+import '../view_model/get_cart_view_model.dart';
 import '../widgets/custom_button.dart';
 import 'order_summary.dart';
 
@@ -16,9 +21,9 @@ class CheckOutScreen extends StatefulWidget {
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
-  late  CheckOutViewModel checkOutViewModel;
+  late CheckOutViewModel checkOutViewModel;
 
-@override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -27,10 +32,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   @override
   void dispose() {
-    checkOutViewModel.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +41,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       {'title': 'Stripe Payment', 'icon': Icons.credit_card},
       {'title': 'EasyPaisa', 'icon': Icons.account_balance_wallet},
       {'title': 'JazzCash', 'icon': Icons.account_balance},
-      {'title': 'Cash on Delivery', 'icon': Icons.money}
+      {'title': 'Cash on Delivery', 'icon': Icons.money},
     ];
 
     return ChangeNotifierProvider(
@@ -63,18 +66,26 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'Payment Methods',
-                      style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
                 Expanded(
                   child: ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 10.h,
+                    ),
                     itemCount: paymentMethods.length,
                     itemBuilder: (context, index) {
                       return Card(
                         child: ListTile(
-                          leading: Icon(paymentMethods[index]['icon'] as IconData),
+                          leading: Icon(
+                            paymentMethods[index]['icon'] as IconData,
+                          ),
                           title: Text(
                             paymentMethods[index]['title'].toString(),
                             style: TextStyle(fontSize: 16.sp),
@@ -88,6 +99,25 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           ),
                           onTap: () {
                             value.selectMethod(index);
+
+                            switch (index){
+                              case 0:
+                                Navigator.push(context, MaterialPageRoute(builder: (_)=> StripePaymentScreen()));
+                                break ;
+
+                              case 1:
+                                Navigator.push(context, MaterialPageRoute(builder: (_)=> EasyPaisaPaymentScreen()));
+                                break;
+
+                              case 2:
+                                Navigator.push(context, MaterialPageRoute(builder: (_)=> JazzCashPaymentScreen() ));
+                                break;
+
+                              case 3:
+                                Utils.flushBarSuccessMessage("Cash on Delivery selected", context);
+                                break;
+                            }
+
                           },
                         ),
                       );
@@ -108,24 +138,32 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     onPressed: () async {
                       if (checkOutViewModel.selectedMethodIndex == -1) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please select a payment method')),
+                          SnackBar(
+                            content: Text('Please select a payment method'),
+                          ),
                         );
                         return;
                       }
                       bool success = await checkOutViewModel.placeOrder();
                       if (success) {
+
+                        await Provider.of<GetCartViewModel>(context, listen: false)
+                            .fetchCartUsingPrefs();
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Order placed successfully!')),
                         );
                         Navigator.pop(context); // or navigate as needed
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Order failed. Please try again.')),
+                          SnackBar(
+                            content: Text('Order failed. Please try again.'),
+                          ),
                         );
+
                       }
                     },
-                  )
-
+                  ),
                 ),
                 SizedBox(height: 20.h),
               ],
@@ -135,6 +173,4 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       ),
     );
   }
-
 }
-

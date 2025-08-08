@@ -23,13 +23,79 @@ class CartItemTileWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
       child: Slidable(
         key: ValueKey(item.plantId),
+        startActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          extentRatio: 0.25,
+          children: [
+            SlidableAction(
+              borderRadius: BorderRadius.circular(8.r),
+              onPressed: (_) async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Confirm Delete"),
+                    content: const Text("Are you sure you want to delete this item?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text("Cancel", style: TextStyle(color: Colors.green),),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+
+                          backgroundColor: Colors.red,
+                        ),
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text("Yes", style: TextStyle(color: Colors.white),),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirm == true) {
+                  await onDelete(item.userId, item.plantId);
+                }
+              },              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              icon: Icons.delete,
+            ),
+          ],
+        ),
         endActionPane: ActionPane(
           motion: const DrawerMotion(),
           extentRatio: 0.25,
           children: [
             SlidableAction(
               borderRadius: BorderRadius.circular(8.r),
-              onPressed: (_) => onDelete(item.userId, item.plantId),
+              onPressed: (_) async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text("Confirm Delete"),
+                        content: const Text(
+                          "Are you sure you want to delete this item?",
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text("Cancel", style: TextStyle(color: Colors.green)),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text("Yes", style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
+                      ),
+                );
+
+                if (confirm == true) {
+                  await onDelete(item.userId, item.plantId);
+                }
+              },
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
               icon: Icons.delete,
@@ -39,32 +105,43 @@ class CartItemTileWidget extends StatelessWidget {
         child: Card(
           color: Colors.green.shade50,
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: ListTile(
-
-            leading: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-             Checkbox(value: isSelected, onChanged: onCheckboxChanged,visualDensity: VisualDensity.compact,activeColor: Colors.green,),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(item.imageUrl, width: 60.w, height: 60.h,fit: BoxFit.cover,),
-                ),
-            ],),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.name,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text("Quantity: ${item.quantity}"),
-                Text("Rs = ${item.price * item.quantity}"),
-              ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: InkWell(
+            onTap: (){
+              onCheckboxChanged(!isSelected);
+            },
+            child: ListTile(
+              leading: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Checkbox(
+                    value: isSelected,
+                    onChanged: onCheckboxChanged,
+                    visualDensity: VisualDensity.compact,
+                    activeColor: Colors.green,
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      item.imageUrl,
+                      width: 60.w,
+                      height: 60.h,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ],
+              ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item.name, style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("Quantity: ${item.quantity}"),
+                  Text("Rs. ${(item.price * item.quantity).toStringAsFixed(2)}"),
+                ],
+              ),
             ),
-
-
-
           ),
         ),
       ),

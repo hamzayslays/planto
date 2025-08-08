@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../data/network/base_api_services.dart';
 import '../data/network/network_api_services.dart';
 import '../model/cart_item_model.dart';
@@ -42,27 +44,11 @@ class CartRepository {
         return [];
       }
     } catch (e) {
-      print("❌ Error in getCartItems: $e");
+      if (kDebugMode) {
+        print(" Error in getCartItems: $e");
+      }
       rethrow;
     }
   }
-
-  Future<dynamic> updateCartQuantity(String userId, String plantId, dynamic data) async {
-    try {
-
-
-      final response = await _apiServices.getPutApiResponse(
-          AppUrl.updateCartEndPointUrl
-              .replaceAll('{userId}', userId)
-              .replaceAll('{plantId}', plantId),
-        data
-      );
-      return response;
-    } catch (e) {
-      print(" Error in updateCartQuantity: $e");
-      rethrow;
-    }
-  }
-
 
 }
